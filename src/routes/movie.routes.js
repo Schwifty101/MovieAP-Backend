@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/movies/:
+ * /movies/:
  *   get:
  *     tags:
  *       - Movies
@@ -59,7 +59,7 @@ router.get('/', movieController.getAllMovies);
 
 /**
  * @swagger
- * /api/v1/movies/{id}:
+ * /movies/{id}:
  *   get:
  *     tags:
  *       - Movies
@@ -97,7 +97,7 @@ router.get('/:id', movieController.getMovie)
 
 /**
  * @swagger
- * /api/v1/movies/{id}:
+ * /movies/{id}:
  *   patch:
  *     tags:
  *       - Movies
@@ -147,7 +147,7 @@ router.patch('/:id', protect, restrictTo('admin'), movieController.updateMovie);
 
 /**
  * @swagger
- * /api/v1/movies/{id}:
+ * /movies/{id}:
  *   delete:
  *     tags:
  *       - Movies

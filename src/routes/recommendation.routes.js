@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/recommendations/personal:
+ * /recommendations/personal:
  *   get:
  *     tags:
  *       - Recommendations
@@ -41,7 +41,7 @@ router.get('/personal', protect, recommendationController.getPersonalizedRecomme
 
 /**
  * @swagger
- * /api/v1/recommendations/similar/{movieId}:
+ * /recommendations/similar/{movieId}:
  *   get:
  *     tags:
  *       - Recommendations
@@ -81,7 +81,7 @@ router.get('/similar/:movieId', recommendationController.getSimilarMovies);
 
 /**
  * @swagger
- * /api/v1/recommendations/trending:
+ * /recommendations/trending:
  *   get:
  *     tags:
  *       - Recommendations

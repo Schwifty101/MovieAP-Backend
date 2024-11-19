@@ -97,7 +97,7 @@ router.patch('/profile', protect, validate, userController.updateProfile);
 
 /**
  * @swagger
- * /api/v1/users/wishlist:
+ * /users/wishlist:
  *   get:
  *     tags:
  *       - Users
@@ -130,7 +130,7 @@ router.get('/wishlist', protect, validate, userController.getWishlist);
 
 /**
  * @swagger
- * /api/v1/users/wishlist/{movieId}:
+ * /users/wishlist/{movieId}:
  *   post:
  *     tags:
  *       - Users
@@ -166,7 +166,7 @@ router.post('/wishlist/:movieId', protect, userController.addToWishlist);
 
 /**
  * @swagger
- * /api/v1/users/wishlist/{movieId}:
+ * /users/wishlist/{movieId}:
  *   delete:
  *     tags:
  *       - Users

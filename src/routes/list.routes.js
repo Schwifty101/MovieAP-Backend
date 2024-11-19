@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/lists/:
+ * /lists/:
  *   post:
  *     tags:
  *       - Lists
@@ -64,7 +64,7 @@ router.post('/', protect, listController.createList);
 
 /**
  * @swagger
- * /api/v1/lists/user/{userId}:
+ * /lists/user/{userId}:
  *   get:
  *     tags:
  *       - Lists
@@ -123,7 +123,7 @@ router.get('/user/:userId', listController.getUserLists);
 
 /**
  * @swagger
- * /api/v1/lists/{listId}/follow:
+ * /lists/{listId}/follow:
  *   post:
  *     tags:
  *       - Lists

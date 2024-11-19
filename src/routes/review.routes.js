@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/reviews/:
+ * /reviews/:
  *   post:
  *     tags:
  *       - Reviews
@@ -58,7 +58,7 @@ router.post('/', protect, reviewController.createReview);
 
 /**
  * @swagger
- * /api/v1/reviews/movie/{movieId}:
+ * /reviews/movie/{movieId}:
  *   get:
  *     tags:
  *       - Reviews
@@ -122,7 +122,7 @@ router.get('/movie/:movieId', reviewController.getMovieReviews);
 
 /**
  * @swagger
- * /api/v1/reviews/reviews/{reviewId}:
+ * /reviews/reviews/{reviewId}:
  *   patch:
  *     tags:
  *       - Reviews

@@ -9,7 +9,7 @@ router.use(restrictTo('admin'));
 
 /**
  * @swagger
- * /api/v1/admin/dashboard:
+ * /admin/dashboard:
  *   get:
  *     tags:
  *       - Admin
@@ -59,7 +59,7 @@ router.get('/dashboard', adminController.getDashboardStats);
 
 /**
  * @swagger
- * /api/v1/admin/moderate:
+ * /admin/moderate:
  *   post:
  *     tags:
  *       - Admin

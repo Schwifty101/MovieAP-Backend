@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/discussions/:
+ * /discussions:
  *   post:
  *     tags:
  *       - Discussions
@@ -70,7 +70,7 @@ router.post('/', protect, discussionController.createDiscussion);
 
 /**
  * @swagger
- * /api/v1/discussions/:
+ * /discussions:
  *   get:
  *     tags:
  *       - Discussions
@@ -138,7 +138,7 @@ router.get('/', discussionController.getDiscussions);
 
 /**
  * @swagger
- * /api/v1/discussions/{discussionId}/comments:
+ * /discussions/{discussionId}/comments:
  *   post:
  *     tags:
  *       - Discussions

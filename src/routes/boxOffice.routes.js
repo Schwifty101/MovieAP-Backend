@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1//boxOffice/movies/{movieId}:
+ * /boxOffice/movies/{movieId}:
  *   post:
  *     tags:
  *       - BoxOffice
@@ -68,7 +68,7 @@ router.post('/movies/:movieId', protect, restrictTo('admin'), boxOfficeControlle
 
 /**
  * @swagger
- * /api/v1//boxOffice/movies/{movieId}:
+ * /boxOffice/movies/{movieId}:
  *   get:
  *     tags:
  *       - BoxOffice

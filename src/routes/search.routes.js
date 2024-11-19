@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/search/movies:
+ * /search/movies:
  *   get:
  *     tags:
  *       - Search
@@ -92,7 +92,7 @@ router.get('/movies', searchController.searchMovies);
 
 /**
  * @swagger
- * /api/v1/search/top/{genre}:
+ * /search/top/{genre}:
  *   get:
  *     tags:
  *       - Search
