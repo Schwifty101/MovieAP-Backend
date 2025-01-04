@@ -1,0 +1,233 @@
+Register User (POST /auth/register)
+
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "password123",
+}
+
+Login User (POST /auth/login)
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+Update Profile (PUT /profile/update)
+{
+  "username": "updateduser",
+  "email": "updated@example.com"
+}
+
+Update Preferences (PUT /profile/preferences)
+{
+  "favoriteGenres": ["action", "comedy", "sci-fi"],
+  "favoriteActors": ["Tom Hanks", "Morgan Freeman"],
+  "favoriteDirectors": ["Christopher Nolan", "Martin Scorsese"],
+  "contentRating": ["PG-13", "R"],
+  "languages": ["English", "Spanish"]
+}
+
+View Profile (GET /profile/view)
+// No body needed - Uses JWT token from Authorization header
+
+View Preferences (GET /profile/preferences)
+// No body needed - Uses JWT token from Authorization header
+
+View Wishlist (GET /profile/wishlist)
+// No body needed - Uses JWT token from Authorization header
+
+Add to Wishlist (POST /profile/wishlist/:movieId)
+// No body needed - Uses movieId in URL parameter
+// Example URL: POST /profile/wishlist/507f1f77bcf86cd799439011
+
+Remove from Wishlist (DELETE /profile/wishlist/:movieId)
+// No body needed - Uses movieId in URL parameter
+// Example URL: DELETE /profile/wishlist/507f1f77bcf86cd799439011
+
+Delete Profile (DELETE /profile/delete)
+// No body needed - Uses JWT token from Authorization header
+
+
+Testing Notes:
+1. First register a user
+2. Login to get JWT token
+3. Add token to Authorization header: "Bearer <your-token>"
+4. Test routes in this recommended order:
+   - View Profile (to verify initial state)
+   - Update Profile
+   - Update Preferences
+   - View Preferences
+   - Add to Wishlist
+   - View Wishlist
+   - Remove from Wishlist
+   - Delete Profile (test last as it removes the user)
+
+
+---------------------------------------------
+
+admin add movie
+
+{
+  "title": "Inception",
+  "originalTitle": "Inception",
+  "genre": ["action", "sci-fi", "thriller"],
+  "cast": [
+    {
+      "actor": {
+        "name": "Leonardo DiCaprio",
+        "photo": "https://example.com/photos/leonardo.jpg",
+        "biography": "Leonardo DiCaprio is an American actor known for his roles in Inception, Titanic, and more.",
+        "birthDate": "1974-11-11",
+        "birthPlace": "Los Angeles, California, USA",
+        "awards": [
+          {
+            "name": "Academy Award",
+            "year": 2016,
+            "category": "Best Actor"
+          }
+        ],
+        "filmography": [
+          {
+            "title": "Titanic",
+            "year": 1997,
+            "role": "Jack Dawson"
+          }
+        ]
+      },
+      "character": {
+        "name": "Dom Cobb",
+        "description": "A skilled thief who steals secrets from within the subconscious.",
+        "isMainCharacter": true
+      },
+      "order": 1
+    }
+  ],
+  "crew": [
+    {
+      "name": "Christopher Nolan",
+      "role": "director",
+      "department": "directing",
+      "photo": "https://example.com/photos/nolan.jpg",
+      "biography": "Christopher Nolan is a British-American film director, producer, and screenwriter.",
+      "birthDate": "1970-07-30",
+      "birthPlace": "London, England",
+      "awards": [
+        {
+          "name": "BAFTA",
+          "year": 2001,
+          "category": "Best Director"
+        }
+      ],
+      "filmography": [
+        {
+          "title": "The Dark Knight",
+          "year": 2008,
+          "role": "director"
+        }
+      ]
+    }
+  ],
+  "releaseDate": "2010-07-16",
+  "runtime": 148,
+  "synopsis": "A thief who enters the subconscious to steal secrets faces a final challenge to plant an idea in a target's mind.",
+  "tagline": "Your mind is the scene of the crime.",
+  "ageRating": {
+    "rating": "PG-13",
+    "reason": "Intense sequences of violence and action.",
+    "parentalGuidance": {
+      "violence": {
+        "level": 4,
+        "description": "Frequent action sequences with some intense violence."
+      },
+      "language": {
+        "level": 2,
+        "description": "Occasional use of mild language."
+      },
+      "nudity": {
+        "level": 1,
+        "description": "Brief scenes with minimal nudity."
+      },
+      "substances": {
+        "level": 1,
+        "description": "Few scenes showing alcohol consumption."
+      }
+    }
+  },
+  "media": {
+    "coverPhoto": "https://example.com/photos/inception-cover.jpg",
+    "photos": [
+      "https://example.com/photos/inception1.jpg",
+      "https://example.com/photos/inception2.jpg"
+    ],
+    "posters": [
+      "https://example.com/posters/inception-poster1.jpg",
+      "https://example.com/posters/inception-poster2.jpg"
+    ],
+    "trailer": "https://example.com/trailer/inception.mp4"
+  },
+  "trivia": [
+    {
+      "fact": "The snow fortress in Inception was inspired by the James Bond film On Her Majesty's Secret Service."
+      
+    }
+  ],
+  "goofs": [
+    {
+      "description": "The level of water in the glass changes between shots in the cafe scene.",
+      "category": "continuity"
+      
+    }
+  ],
+  "soundtrack": [
+    {
+      "title": "Time",
+      "artist": "Hans Zimmer",
+      "composer": "Hans Zimmer",
+      "duration": "4:35",
+      "scene": "Final scene"
+    }
+  ],
+  "technicalSpecs": {
+    "language": ["English", "Japanese", "French"],
+    "aspectRatio": "2.39:1",
+    "soundMix": ["Dolby Digital", "DTS", "SDDS"],
+    "color": "Color"
+  },
+  "averageRating": 4.8,
+  "totalRatings": 12000,
+  "budget": {
+    "amount": 160000000,
+    "currency": "USD"
+  },
+  "boxOffice": {
+    "domestic": 292576195,
+    "international": 535742000,
+    "worldwide": 828318195,
+    "currency": "USD"
+  },
+  "productionCompanies": ["Warner Bros.", "Legendary Pictures", "Syncopy"],
+  "distributors": ["Warner Bros. Pictures"],
+  "filmingLocations": [
+    {
+      "location": "Los Angeles, California, USA",
+      "description": "Various scenes"
+    }
+  ]
+}
+
+
+1. Create a New Movie Review (POST /api/reviews)
+Request Body:
+{
+  "movieId": "60d21b4667d0d8992e610c85", // Replace with a valid movie ID
+  "rating": 5,
+  "comment": "This movie was fantastic! Highly recommend."
+}
+
+Update an Existing Review (PUT /api/reviews/:id)
+
+{
+  "rating": 4,
+  "comment": "Updated review: The movie was good, but not as great as I expected."
+}

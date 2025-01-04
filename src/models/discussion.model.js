@@ -1,65 +1,59 @@
 const mongoose = require('mongoose');
 
+/**
+ * Mongoose schema for movie discussions
+ * Enables users to create and participate in discussions about specific movies
+ * Includes support for threaded comments and tracks creation timestamps
+ */
 const discussionSchema = new mongoose.Schema({
+  // Title of the discussion thread (required)
   title: {
     type: String,
     required: true,
-    trim: true
+    trim: true // Removes whitespace from both ends
   },
+  // Main content/body of the discussion post (required)
   content: {
     type: String,
     required: true
   },
-  author: {
+  // Reference to the movie this discussion is about
+  movie: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Movie', // References the Movie model
     required: true
   },
-  category: {
-    type: String,
-    required: true,
-    enum: ['movie', 'actor', 'genre', 'general']
-  },
-  relatedMovie: {
+  // Reference to the user who created the discussion
+  creator: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Movie'
+    ref: 'User', // References the User model
+    required: true
   },
-  relatedPerson: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Person'
-  },
-  tags: [String],
-  views: {
-    type: Number,
-    default: 0
-  },
+  // Array of comment objects on this discussion
   comments: [{
-    author: {
+    // Reference to the user who wrote the comment
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required: true
     },
-    content: String,
-    likes: {
-      type: Number,
-      default: 0
+    // Content of the comment (required)
+    content: {
+      type: String,
+      required: true
     },
+    // Timestamp when comment was created
     createdAt: {
       type: Date,
       default: Date.now
     }
   }],
-  isLocked: {
-    type: Boolean,
-    default: false
-  },
+  // Timestamp when discussion was created
   createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
     type: Date,
     default: Date.now
   }
 });
 
+// Export the Discussion model
 module.exports = mongoose.model('Discussion', discussionSchema);

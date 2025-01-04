@@ -1,0 +1,3487 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Movie Recommendation API",
+    "version": "1.0.0",
+    "description": "API documentation for the Movie Recommendation System"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" },
+                    "userId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" },
+                    "userId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/profile/view": {
+      "get": {
+        "summary": "View user profile",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/profile/update": {
+      "put": {
+        "summary": "Update user profile",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/profile/delete": {
+      "delete": {
+        "summary": "Delete user profile",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Profile deleted successfully"
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/profile/preferences": {
+      "get": {
+        "summary": "View user preferences",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "put": {
+        "summary": "Update user preferences",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPreferences"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preferences updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/profile/wishlist": {
+      "get": {
+        "summary": "View wishlist",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User's wishlist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "wishlist": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Movie"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/profile/wishlist/{movieId}": {
+      "post": {
+        "summary": "Add movie to wishlist",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie added to wishlist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "wishlist": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Movie already in wishlist or invalid movie ID" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "delete": {
+        "summary": "Remove movie from wishlist",
+        "tags": ["Profile"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie removed from wishlist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "wishlist": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Movie not in wishlist or invalid movie ID" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/movies": {
+      "get": {
+        "summary": "Get movies with filters",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer" },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer" },
+            "description": "Items per page"
+          },
+          {
+            "in": "query",
+            "name": "genre",
+            "schema": { "type": "string" },
+            "description": "Filter by genre"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": { "type": "string" },
+            "description": "Search in title and director"
+          },
+          {
+            "in": "query",
+            "name": "minRating",
+            "schema": { "type": "number" },
+            "description": "Minimum rating filter"
+          },
+          {
+            "in": "query",
+            "name": "maxRating",
+            "schema": { "type": "number" },
+            "description": "Maximum rating filter"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": { "type": "string" },
+            "description": "Sort field"
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": { "type": "string", "enum": ["asc", "desc"] },
+            "description": "Sort order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Movie created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "summary": "Get movie by ID",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Movie updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie deleted"
+          }
+        }
+      }
+    },
+   
+    
+    "/movies/{movieId}/cast": {
+      "get": {
+        "summary": "Get cast members for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of cast members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CastMember"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a cast member to a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CastMemberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cast member added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CastMember"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/movies/{movieId}/cast/{castId}": {
+      "get": {
+        "summary": "Get details of a specific cast member",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "castId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cast member details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CastMember"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or cast member not found" }
+        }
+      },
+      "put": {
+        "summary": "Update a specific cast member",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "castId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CastMemberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cast member updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CastMember"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or cast member not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific cast member",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "castId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cast member deleted successfully"
+          },
+          "404": { "description": "Movie or cast member not found" }
+        }
+      }
+    },
+    "/movies/{movieId}/crew": {
+      "get": {
+        "summary": "Get crew members for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of crew members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CrewMember"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a crew member to a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrewMemberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Crew member added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewMember"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/movies/{movieId}/crew/{crewId}": {
+      "get": {
+        "summary": "Get details of a specific crew member",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "crewId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Crew member details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewMember"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or crew member not found" }
+        }
+      },
+      "put": {
+          "summary": "Update a specific crew member",
+          "tags": ["Movies"],
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "movieId",
+              "required": true,
+              "schema": { "type": "string" }
+            },
+            {
+              "in": "path",
+              "name": "crewId",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewMemberInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Crew member updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CrewMember"
+                  }
+                }
+              }
+            },
+            "404": { "description": "Movie or crew member not found" }
+          }
+        },
+        "delete": {
+          "summary": "Delete a specific crew member",
+          "tags": ["Movies"],
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "movieId",
+              "required": true,
+              "schema": { "type": "string" }
+            },
+            {
+              "in": "path",
+              "name": "crewId",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Crew member deleted successfully"
+            },
+            "404": { "description": "Movie or crew member not found" }
+          }
+        }
+      },
+      "/movies/{movieId}/trivia": {
+        "get": {
+          "summary": "Get trivia for a specific movie",
+          "tags": ["Movies"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "movieId",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of trivia items",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TriviaItem"
+                    }
+                  }
+                }
+              }
+            },
+            "404": { "description": "Movie not found" }
+          }
+        },
+        "post": {
+          "summary": "Add trivia to a specific movie",
+          "tags": ["Movies"],
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "movieId",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TriviaInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Trivia item added successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TriviaItem"
+                  }
+                }
+              }
+            },
+            "400": { "description": "Invalid input" }
+          }
+        }
+      },
+      "/movies/{movieId}/trivia/{triviaId}": {
+      "put": {
+        "summary": "Update a specific trivia item",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "triviaId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriviaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trivia item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TriviaItem"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or trivia item not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific trivia item",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "triviaId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trivia item deleted successfully"
+          },
+          "404": { "description": "Movie or trivia item not found" }
+        }
+      }
+    },
+    "/movies/{movieId}/goofs": {
+      "get": {
+        "summary": "Get goofs for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of goofs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GoofItem"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a goof to a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoofInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Goof added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoofItem"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+  "/movies/{movieId}/goofs/{goofId}": {
+      "put": {
+        "summary": "Update a specific goof",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "goofId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoofInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goof updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoofItem"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or goof not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific goof",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "goofId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goof deleted successfully"
+          },
+          "404": { "description": "Movie or goof not found" }
+        }
+      }
+    },
+    "/movies/{movieId}/soundtrack": {
+      "get": {
+        "summary": "Get soundtrack for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of soundtrack tracks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SoundtrackItem"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a soundtrack track to a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SoundtrackInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Soundtrack track added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SoundtrackItem"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/movies/{movieId}/soundtrack/{trackId}": {
+      "put": {
+        "summary": "Update a specific soundtrack track",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "trackId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SoundtrackInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Soundtrack track updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SoundtrackItem"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or soundtrack track not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific soundtrack track",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "trackId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Soundtrack track deleted successfully"
+          },
+          "404": { "description": "Movie or soundtrack track not found" }
+        }
+      }
+    },
+    "/movies/{movieId}/specs": {
+      "get": {
+        "summary": "Get technical specs for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Technical specs of the movie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicalSpecs"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "put": {
+        "summary": "Update technical specs for a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TechnicalSpecsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Technical specs updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicalSpecs"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+   
+    "/movies/{movieId}/locations": {
+      "get": {
+        "summary": "Get filming locations for a specific movie",
+        "tags": ["Movies"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filming locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilmingLocation"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "post": {
+        "summary": "Add a filming location to a specific movie",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmingLocationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Filming location added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmingLocation"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/movies/{movieId}/locations/{locationId}": {
+      "put": {
+        "summary": "Update a specific filming location",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "locationId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmingLocationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Filming location updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmingLocation"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie or filming location not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific filming location",
+        "tags": ["Movies"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "path",
+            "name": "locationId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filming location deleted successfully"
+          },
+          "404": { "description": "Movie or filming location not found" }
+        }
+      }
+    },
+    "/reviews": {
+      "post": {
+        "summary": "Create a new movie review",
+        "tags": ["Reviews"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all movie reviews",
+        "tags": ["Reviews"],
+        "responses": {
+          "200": {
+            "description": "List of all reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/movie/{movieId}": {
+      "get": {
+        "summary": "Get movie reviews",
+        "tags": ["Reviews"],
+        "parameters": [
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the movie to get reviews for",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of reviews per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reviews for the specified movie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/{id}": {
+      "put": {
+        "summary": "Update an existing review",
+        "tags": ["Reviews"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the review to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Review not found or unauthorized"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing review",
+        "tags": ["Reviews"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the review to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted successfully"
+          },
+          "404": {
+            "description": "Review not found or unauthorized"
+          }
+        }
+      }
+    },
+    "/recommendations/recommendation": {
+      "get": {
+        "summary": "Get personalized movie recommendations",
+        "description": "Fetch personalized recommendations based on user ratings, favorite genres, and activity.",
+        "tags": ["Recommendations"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of recommended movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/recommendations/movies/{movieId}/similar": {
+      "get": {
+        "summary": "Get similar titles",
+        "description": "Fetch similar titles based on genre, director, or popularity for a specific movie.",
+        "tags": ["Recommendations"],
+        "parameters": [
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the movie to find similar titles for"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of similar movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/recommendations/trending": {
+      "get": {
+        "summary": "Get trending movies",
+        "description": "Fetch trending movies based on recent activity and ratings.",
+        "tags": ["Recommendations"],
+        "responses": {
+          "200": {
+            "description": "List of trending movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/recommendations/top-rated": {
+      "get": {
+        "summary": "Get top-rated movies",
+        "description": "Fetch top-rated movies based on overall user ratings.",
+        "tags": ["Recommendations"],
+        "responses": {
+          "200": {
+            "description": "List of top-rated movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/lists": {
+      "post": {
+        "summary": "Create a new movie list",
+        "tags": ["Lists"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "List created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/List"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all accessible movie lists",
+        "tags": ["Lists"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object"
+            },
+            "description": "Optional filters for lists"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of movie lists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCollection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lists/{id}": {
+      "put": {
+        "summary": "Update an existing list",
+        "tags": ["Lists"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "List ID to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/List"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List not found"
+          },
+          "403": {
+            "description": "Unauthorized to update this list"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing list",
+        "tags": ["Lists"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "List ID to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List deleted successfully"
+          },
+          "404": {
+            "description": "List not found"
+          },
+          "403": {
+            "description": "Unauthorized to delete this list"
+          }
+        }
+      }
+    },
+    "/lists/{id}/follow": {
+        "post": {
+          "summary": "Follow/unfollow a public list",
+          "tags": ["Lists"],
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "List ID to follow/unfollow"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Followed/Unfollowed the list successfully"
+            },
+            "404": {
+              "description": "List not found"
+            },
+            "403": {
+              "description": "Unauthorized to follow/unfollow this list"
+            }
+          }
+        }
+      },
+      
+  "/lists/{id}/movies/{movieId}": {
+    "post": {
+      "summary": "Add a movie to a specific list",
+      "tags": ["Lists"],
+      "security": [{ "bearerAuth": [] }],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "description": "List ID to add a movie to",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "movieId",
+          "description": "Movie ID to add",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Movie added to list successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Success message"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "List not found or unauthorized",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "summary": "Remove a movie from a specific list",
+      "tags": ["Lists"],
+      "security": [{ "bearerAuth": [] }],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "description": "List ID to remove a movie from",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "movieId",
+          "description": "Movie ID to remove",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Movie removed from list successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Success message"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "List not found or unauthorized",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+      "/movies/search": {
+        "get": {
+          "summary": "Search for movies by title, genre, director, or actors",
+          "tags": ["Search Filter"],
+          "parameters": [
+            { "name": "title", "in": "query", "required": false, "schema": { "type": "string" } },
+            { "name": "genre", "in": "query", "required": false, "schema": { "type": "string" } },
+            { "name": "director", "in": "query", "required": false, "schema": { "type": "string" } },
+            { "name": "actor", "in": "query", "required": false, "schema": { "type": "string" } }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of movies matching the search criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Movie" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/movies/filter": {
+        "get": {
+          "summary": "Filter movies by ratings, popularity, and release year",
+          "tags": ["Search Filter"],
+          "parameters": [
+            { "name": "rating", "in": "query", "required": false, "schema": { "type": "number" } },
+            { "name": "popularity", "in": "query", "required": false, "schema": { "type": "number" } },
+            { "name": "releaseYear", "in": "query", "required": false, "schema": { "type": "string" } }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of filtered movies",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Movie" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/movies/advanced-filter": {
+        "get": {
+          "summary": "Advanced filtering of movies",
+          "tags": ["Search Filter"],
+          "parameters": [
+            { "name": "releaseDecade", "in": "query", "required": false, "schema": { "type": "number" } },
+            { "name": "country", "in": "query", "required": false, "schema": { "type": "string" } },
+            { "name": "language", "in": "query", "required": false, "schema": { "type": "string" } },
+            { "name": "keywords", "in": "query", "required": false, "schema": { "type": "string" } }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of movies matching the advanced filter criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Movie" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      
+    "/movies/top-movies/month": {
+      "get": {
+        "summary": "Get top movies of the month",
+        "tags": ["Search Filter"],
+        "responses": {
+          "200": {
+            "description": "Top movies of the month",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Movie" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/top-movies/genre": {
+      "get": {
+        "summary": "Get top 10 movies by genre",
+        "tags": ["Search Filter"],
+        "parameters": [
+          { "name": "genre", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top 10 movies by genre",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Movie" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Genre is required"
+          }
+        }
+      }
+    },
+
+    
+      "/movies/upcoming": {
+        "get": {
+          "summary": "Get upcoming movies",
+          "tags": ["Upcoming Releases and Notifications"],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "schema": { "type": "integer" }
+            },
+            {
+              "in": "query",
+              "name": "limit",
+              "schema": { "type": "integer" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of upcoming movies",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "The title of the upcoming movie"
+                        },
+                        "releaseDate": {
+                          "type": "string",
+                          "format": "date",
+                          "description": "The scheduled release date of the movie"
+                        }
+                      },
+                      "required": ["title", "releaseDate"],
+                      "example": {
+                        "title": "Avatar 3",
+                        "releaseDate": "2024-12-20"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    
+    "/movies/upcoming/reminder": {
+      "post": {
+        "summary": "Set a reminder for an upcoming movie",
+        "tags": ["Upcoming Releases and Notifications"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "movieId": {
+                    "type": "string",
+                    "description": "The ID of the movie for which the reminder is set"
+                  }
+                },
+                "required": ["movieId"],
+                "example": {
+                  "movieId": "60d5ec49f1a2b8b1f8c8e4a5"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reminder set successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Reminder set for the movie 'Avengers: Endgame'!"
+                    },
+                    "movieTitle": {
+                      "type": "string",
+                      "example": "Avengers: Endgame"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Movie not found or already released",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Movie not found or already released"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error setting reminder or sending email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error setting reminder or sending email"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/newsarticles/add": {
+      "post": {
+        "summary": "Add a new news article",
+        "tags": ["News Articles"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "category": {
+                    "type": "string",
+                    "enum": ["Movies", "Actors", "Projects", "Industry Updates"]
+                  },
+                  
+                  
+                  "source": { "type": "string" }
+                },
+                "required": ["title", "content", "category", "source"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Article added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "article": { "$ref": "#/components/schemas/NewsArticle" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add article"
+          }
+        }
+      }
+    },
+  
+    "/newsarticles/category/{category}": {
+      "get": {
+        "summary": "Get articles by category",
+        "tags": ["News Articles"],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["Movies", "Actors", "Projects", "Industry Updates"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of articles in the specified category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/NewsArticle" }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve articles"
+          }
+        }
+      }
+    },
+    "/newsarticles/recent": {
+      "get": {
+        "summary": "Get the latest 10 articles",
+        "tags": ["News Articles"],
+        "responses": {
+          "200": {
+            "description": "List of recent articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/NewsArticle" }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve recent articles"
+          }
+        }
+      }
+    },
+    "/newsarticles/articles/{id}": {
+      "put": {
+        "summary": "Update an article",
+        "tags": ["News Articles"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "category": {
+                    "type": "string",
+                    "enum": ["Movies", "Actors", "Projects", "Industry Updates"]
+                  },
+                  "publicationDate": { "type": "string", "format": "date-time" },
+                  "source": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Article updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsArticle"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized to update this article"
+          },
+          "404": {
+            "description": "Article not found"
+          },
+          "500": {
+            "description": "Failed to update article"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an article",
+        "tags": ["News Articles"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article deleted successfully"
+          },
+          "403": {
+            "description": "Not authorized to delete this article"
+          },
+          "404": {
+            "description": "Article not found"
+          },
+          "500": {
+            "description": "Failed to delete article"
+          }
+        }
+      }
+    },
+
+    "/movies/{movieId}/financials": {
+      "get": {
+        "summary": "Get financial details for a specific movie",
+        "tags": ["Box Office Information and Awards"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Financial details of the movie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Financials"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "put": {
+        "summary": "Update financial details for a specific movie",
+        "tags": ["Box Office Information and Awards"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinancialsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Financial details updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Financials"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+    "/movies/{movieId}/production": {
+      "get": {
+        "summary": "Get production details for a specific movie",
+        "tags": ["Box Office Information and Awards"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Production details of the movie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductionDetails"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" }
+        }
+      },
+      "put": {
+        "summary": "Update production details for a specific movie",
+        "tags": ["Box Office Information and Awards"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductionDetailsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Production details updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductionDetails"
+                }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" },
+          "400": { "description": "Invalid input" }
+        }
+      }
+    },
+
+   
+        "/movies/{movieId}/awards": {
+          "get": {
+            "summary": "Get awards of cast and crew members",
+            "description": "Retrieves the awards of cast and crew members for a specific movie, including their details such as names, roles, and the awards they have received.",
+            "tags": ["Box Office Information and Awards"],
+            "parameters": [
+              {
+                "name": "movieId",
+                "in": "path",
+                "required": true,
+                "description": "The ID of the movie for which to retrieve awards",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Awards retrieved successfully",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "castAwards": {
+                      "type": "array",
+                      "description": "List of awards received by cast members",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "actor": {
+                            "type": "string",
+                            "example": "Leonardo DiCaprio",
+                            "description": "Name of the cast member"
+                          },
+                          "awards": {
+                            "type": "array",
+                            "description": "List of awards received by the actor",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "Best Actor",
+                                  "description": "Name of the award"
+                                },
+                                "year": {
+                                  "type": "integer",
+                                  "example": 2020,
+                                  "description": "Year the award was received"
+                                },
+                                "category": {
+                                  "type": "string",
+                                  "example": "Acting",
+                                  "description": "Category of the award"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "crewAwards": {
+                      "type": "array",
+                      "description": "List of awards received by crew members",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "Christopher Nolan",
+                            "description": "Name of the crew member"
+                          },
+                          "role": {
+                            "type": "string",
+                            "example": "Director",
+                            "description": "Role of the crew member"
+                          },
+                          "awards": {
+                            "type": "array",
+                            "description": "List of awards received by the crew member",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "Best Director",
+                                  "description": "Name of the award"
+                                },
+                                "year": {
+                                  "type": "integer",
+                                  "example": 2021,
+                                  "description": "Year the award was received"
+                                },
+                                "category": {
+                                  "type": "string",
+                                  "example": "Directing",
+                                  "description": "Category of the award"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Movie not found",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Movie not found"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Failed to retrieve awards",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve awards"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+    
+
+    "/discussions/{movieId}": {
+      "post": {
+        "summary": "Create a discussion for a movie",
+        "tags": ["Discussions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the movie to create a discussion for"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscussionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Discussion created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/discussions/{id}/comments": {
+      "post": {
+        "summary": "Add comment to discussion",
+        "tags": ["Discussions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discussion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+  "/discussions/movie/{movieId}": {
+    "get": {
+      "summary": "Get all discussions for a specific movie",
+      "tags": ["Discussions"],
+      "security": [{ "bearerAuth": [] }],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "movieId",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Discussions retrieved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscussionCollection"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/statistics": {
+    "get": {
+      "summary": "Get site statistics",
+      "tags": ["Admin"],
+      "security": [{ "bearerAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "Site statistics retrieved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "popularMovies": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Movie"
+                    }
+                  },
+                  "totalUsers": {
+                    "type": "integer"
+                  },
+                  "totalReviews": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/trending-genres": {
+    "get": {
+      "summary": "Get trending genres",
+      "tags": ["Admin"],
+      "security": [{ "bearerAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "Trending genres retrieved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/most-searched-actors": {
+    "get": {
+      "summary": "Get most searched actors",
+      "tags": ["Admin"],
+      "security": [{ "bearerAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "Most searched actors retrieved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "movieCount": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/user-engagement": {
+    "get": {
+      "summary": "Get user engagement patterns",
+      "tags": ["Admin"],
+      "security": [{ "bearerAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "User engagement patterns retrieved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "reviewCount": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+    
+   
+  },
+  
+    
+  "components": {
+    "schemas": {
+      "UserRegistration": {
+        "type": "object",
+        "required": ["username", "email", "password"],
+        "properties": {
+          "username": { "type": "string", "minLength": 3 },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string" }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "role": { "type": "string", "enum": ["user", "admin"] },
+          "preferences": { "$ref": "#/components/schemas/UserPreferences" },
+          "wishlist": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "watchedMovies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserProfileUpdate": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string", "minLength": 3 },
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "UserPreferences": {
+        "type": "object",
+        "properties": {
+          "favoriteGenres": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["action", "comedy", "drama", "horror", "romance", "sci-fi", "thriller", "documentary", "animation"]
+            }
+          },
+          "favoriteActors": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "favoriteDirectors": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "contentRating": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["G", "PG", "PG-13", "R", "NC-17"]
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Movie": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "genre": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "director": { "type": "string" },
+          "cast": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "releaseDate": { "type": "string", "format": "date" },
+          "synopsis": { "type": "string" },
+          "posterUrl": { "type": "string" },
+          "trailerUrl": { "type": "string" },
+          "averageRating": { "type": "number" },
+          "totalRatings": { "type": "integer" }
+        }
+      },
+      
+      "MovieInput": {
+        "type": "object",
+        "required": ["title", "genre", "director", "releaseDate", "synopsis"],
+        "properties": {
+          "title": { "type": "string" },
+          "genre": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "director": { "type": "string" },
+          "cast": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "releaseDate": { "type": "string", "format": "date" },
+          "synopsis": { "type": "string" },
+          "posterUrl": { "type": "string" },
+          "trailerUrl": { "type": "string" }
+        }
+      },
+     
+      "MovieList": {
+        "type": "object",
+        "properties": {
+          "movies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Movie"
+            }
+          },
+          "totalPages": { "type": "integer" },
+          "currentPage": { "type": "integer" },
+          "totalMovies": { "type": "integer" }
+        }
+      },
+      "CastMember": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "order": { "type": "integer" }
+        }
+      },
+      "CastMemberInput": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "order": { "type": "integer" }
+        }
+      },
+      "CrewMember": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "department": { "type": "string" }
+        }
+      },
+      "CrewMemberInput": {
+        "type": "object",
+        "required": ["name", "role", "department"],
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "department": { "type": "string" }
+        }
+      },
+      "TriviaItem": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "fact": { "type": "string" },
+          "addedBy": { "type": "string" }
+        }
+      },
+      "TriviaInput": {
+        "type": "object",
+        "required": ["fact"],
+        "properties": {
+          "fact": { "type": "string" }
+        }
+      },
+      "GoofItem": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "addedBy": { "type": "string" }
+        }
+      },
+      "GoofInput": {
+        "type": "object",
+        "required": ["description", "category"],
+        "properties": {
+          "description": { "type": "string" },
+          "category": { "type": "string" }
+        }
+      },
+     
+      "SoundtrackItem": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "artist": { "type": "string" },
+          "duration": { "type": "string" },
+          "url": { "type": "string" }
+        }
+      },
+      "SoundtrackInput": {
+        "type": "object",
+        "required": ["title", "artist", "duration", "url"],
+        "properties": {
+          "title": { "type": "string" },
+          "artist": { "type": "string" },
+          "duration": { "type": "string" },
+          "url": { "type": "string" }
+        }
+      },
+      "TechnicalSpecs": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "aspectRatio": { "type": "string" },
+          "resolution": { "type": "string" },
+          "audio": { "type": "string" },
+          "subtitles": { "type": "array", "items": { "type": "string" } },
+          "runtime": { "type": "string" }
+        }
+      },
+      "TechnicalSpecsInput": {
+        "type": "object",
+        "properties": {
+          "aspectRatio": { "type": "string" },
+          "resolution": { "type": "string" },
+          "audio": { "type": "string" },
+          "subtitles": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "runtime": { "type": "string" }
+        }
+      },
+      "Financials": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "budget": {
+            "type": "object",
+            "properties": {
+              "amount": { "type": "number" },
+              "currency": { "type": "string", "default": "USD" }
+            }
+          },
+          "boxOffice": {
+            "type": "object",
+            "properties": {
+              "domestic": { "type": "number", "default": 0 },
+              "international": { "type": "number", "default": 0 },
+              "worldwide": { "type": "number", "default": 0 },
+              "currency": { "type": "string", "default": "USD" }
+            }
+          },
+          "profit": { "type": "number" }
+        }
+      },
+      "FinancialsInput": {
+        "type": "object",
+        "required": ["budget", "boxOffice"],
+        "properties": {
+          "budget": {
+            "type": "object",
+            "properties": {
+              "amount": { "type": "number" },
+              "currency": { "type": "string", "default": "USD" }
+            }
+          },
+          "boxOffice": {
+            "type": "object",
+            "properties": {
+              "domestic": { "type": "number", "default": 0 },
+              "international": { "type": "number", "default": 0 },
+              "worldwide": { "type": "number", "default": 0 },
+              "currency": { "type": "string", "default": "USD" }
+            }
+          }
+        }
+      },
+      "ProductionDetails": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "productionCompanies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "productionCountries": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "budget": { "type": "number" },
+          "filmingLocations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "ProductionDetailsInput": {
+        "type": "object",
+        "properties": {
+          "productionCompanies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "productionCountries": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "budget": { "type": "number" },
+          "filmingLocations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "FilmingLocation": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "latitude": { "type": "number" },
+              "longitude": { "type": "number" }
+            }
+          }
+        }
+      },
+      "FilmingLocationInput": {
+        "type": "object",
+        "required": ["location", "description", "coordinates"],
+        "properties": {
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "latitude": { "type": "number" },
+              "longitude": { "type": "number" }
+            }
+          }
+        }
+      },
+      "ReviewInput": {
+        "type": "object",
+        "required": ["movieId", "rating", "comment"],
+        "properties": {
+          "movieId": {
+            "type": "string",
+            "description": "ID of the movie being reviewed"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Rating given to the movie"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about the movie"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/reviewUser" },
+          "movie": { "type": "string" },
+          "rating": { "type": "number", "minimum": 1, "maximum": 5 },
+          "comment": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ReviewList": {
+        "type": "object",
+        "properties": {
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Review"
+            }
+          },
+          "totalPages": { "type": "integer" },
+          "currentPage": { "type": "integer" }
+        }
+      },
+      "reviewUser": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "username": { "type": "string" }
+        }
+      },
+      
+      "List": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "creator": { "$ref": "#/components/schemas/User" },
+          "movies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "isPublic": { "type": "boolean" },
+          "followers": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "ListInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "movies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "isPublic": { "type": "boolean" }
+        }
+      },
+      "ListCollection": {
+        "type": "object",
+        "properties": {
+          "lists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/List"
+            }
+          },
+          "totalPages": { "type": "integer" },
+          "currentPage": { "type": "integer" }
+        }
+      },
+      "NewsArticle": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["Movies", "Actors", "Projects", "Industry Updates"]
+          },
+          "author": { "type": "string", "default": "Unknown" },
+          "publicationDate": { "type": "string", "format": "date-time" },
+          "source": { "type": "string" }
+        }
+      },
+      
+      "Discussion": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "movie": { "type": "string" },
+          "creator": { "$ref": "#/components/schemas/User" },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "DiscussionInput": {
+        "type": "object",
+        "required": ["title", "content", "movie"],
+        "properties": {
+          "title": { "type": "string", "example": "The Shawshank Redemption" },
+          "content": { "type": "string", "example": "A timeless classic that never gets old." }
+             }
+      },
+      "DiscussionCollection": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Discussion"
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "user": { "$ref": "#/components/schemas/User" },
+          "content": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "username": { "type": "string" }
+        }
+      }
+
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

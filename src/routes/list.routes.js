@@ -1,164 +1,65 @@
 const express = require('express');
-const listController = require('../controllers/list.controller');
-const { protect } = require('../middleware/auth.middleware');
-
 const router = express.Router();
+const listController = require('../controllers/list.controller');
+const { authenticate } = require('../middleware/auth.middleware');
+
+// All routes require authentication
+router.use(authenticate);
 
 /**
- * @swagger
- * /lists/:
- *   post:
- *     tags:
- *       - Lists
- *     summary: Create a new list
- *     description: Authenticated users can create a custom list of movies.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Name of the list
- *               description:
- *                 type: string
- *                 description: Description of the list
- *               movies:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Array of movie IDs to include in the list
- *               isPublic:
- *                 type: boolean
- *                 description: Whether the list is public or private
- *             required:
- *               - name
- *               - movies
- *     responses:
- *       201:
- *         description: List created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   type: object
- *                   properties:
- *                     list:
- *                       $ref: '#/components/schemas/List'
- *       400:
- *         description: Invalid request data
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ * POST /api/lists
+ * Create a new movie list
+ * @body {Object} listData - List details including name, description, movies, isPublic
  */
-
-router.post('/', protect, listController.createList);
+router.post('/', listController.createList);
 
 /**
- * @swagger
- * /lists/user/{userId}:
- *   get:
- *     tags:
- *       - Lists
- *     summary: Get lists for a specific user
- *     description: Retrieve lists created by a specific user or public lists they have shared. Supports pagination.
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the user whose lists are being retrieved
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           example: 1
- *         description: Pagination page number
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           example: 10
- *         description: Number of lists per page
- *     responses:
- *       200:
- *         description: Lists retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   type: object
- *                   properties:
- *                     lists:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/List'
- *                     pagination:
- *                       type: object
- *                       properties:
- *                         current:
- *                           type: integer
- *                         pages:
- *                           type: integer
- *                         total:
- *                           type: integer
- *       400:
- *         description: Invalid request
+ * GET /api/lists
+ * Get all accessible movie lists (public lists and user's private lists)
+ * @query {Object} filters - Optional filters for lists
  */
-router.get('/user/:userId', listController.getUserLists);
+router.get('/', listController.getLists);
 
 /**
- * @swagger
- * /lists/{listId}/follow:
- *   post:
- *     tags:
- *       - Lists
- *     summary: Follow a list
- *     description: Authenticated users can follow a specific list.
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: listId
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the list to follow
- *     responses:
- *       200:
- *         description: List followed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: List followed successfully
- *       400:
- *         description: Invalid request
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       404:
- *         description: List not found
+ * PUT /api/lists/:id
+ * Update an existing list
+ * Only list creator can update
+ * @param {string} id - List ID to update
+ * @body {Object} updateData - Updated list data
  */
-router.post('/:listId/follow', protect, listController.followList);
+router.put('/:id', listController.updateList);
+
+/**
+ * DELETE /api/lists/:id
+ * Delete an existing list
+ * Only list creator can delete
+ * @param {string} id - List ID to delete
+ */
+router.delete('/:id', listController.deleteList);
+
+/**
+ * POST /api/lists/:id/follow
+ * Follow/unfollow a public list
+ * @param {string} id - List ID to follow/unfollow
+ */
+router.post('/:id/follow', listController.followList);
+
+/**
+ * POST /api/lists/:id/movies
+ * Add a movie to a specific list
+ * Only the list creator can add movies
+ * @param {string} id - List ID to add a movie to
+ * @body {Object} movieData - Movie details to add (e.g., movieId)
+ */
+router.post('/:id/movies/:movieId', listController.addMovieToList);
+
+/**
+ * DELETE /api/lists/:id/movies/:movieId
+ * Remove a movie from a specific list
+ * Only the list creator can remove movies
+ * @param {string} id - List ID to remove a movie from
+ * @param {string} movieId - Movie ID to remove
+ */
+router.delete('/:id/movies/:movieId', listController.removeMovieFromList);
 
 module.exports = router;

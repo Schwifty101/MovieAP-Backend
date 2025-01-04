@@ -1,101 +1,95 @@
 const Movie = require('../models/movie.model');
-const Review = require('../models/review.model');
 const User = require('../models/user.model');
 
-exports.getPersonalizedRecommendations = async (req, res) => {
+/**
+ * Get movie recommendations for a user based on their preferences
+ * @param {Object} req - Express request object
+ * @param {Object} req.user - Authenticated user object
+ * @param {Object} res - Express response object
+ * @returns {Object} Recommended movies
+ */
+exports.getRecommendations = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    
-    // Get user's favorite genres and rated movies
-    const userReviews = await Review.find({ user: userId }).populate('movie');
-    const ratedMovieIds = userReviews.map(review => review.movie._id);
-    
-    // Find similar movies based on genres and ratings
-    const recommendations = await Movie.find({
-      _id: { $nin: ratedMovieIds },
-      genre: { $in: user.preferences.favoriteGenres },
-      averageRating: { $gte: 4 }
-    })
-    .limit(10)
-    .sort('-averageRating -totalRatings');
+    // Fetch user with preferences
+    const user = await User.findById(req.user._id).populate('wishlist watchedMovies');
+    const { favoriteGenres, favoriteActors, favoriteDirectors, contentRating, languages } = user.preferences;
 
-    res.status(200).json({
-      status: 'success',
-      data: { recommendations }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    // Build the query based on user preferences
+    const query = {
+      $or: [
+        { genre: { $in: favoriteGenres } }, // Match favorite genres
+        { 'cast.actor.name': { $in: favoriteActors } }, // Match favorite actors
+        { 'crew.name': { $in: favoriteDirectors } } // Match favorite directors
+      ],
+      _id: { $nin: user.watchedMovies }, // Exclude watched movies
+      ...(contentRating.length > 0 && { 'ageRating.rating': { $in: contentRating } }), // Match content ratings
+      ...(languages.length > 0 && { 'technicalSpecs.language': { $in: languages } }) // Match languages
+    };
+
+    // Find recommended movies based on user preferences
+    const recommendedMovies = await Movie.find(query).limit(10);
+
+    res.json(recommendedMovies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.getSimilarMovies = async (req, res) => {
+/**
+ * Get similar movies based on a given movie
+ * @param {Object} req - Express request object
+ * @param {string} req.params.movieId - ID of the movie to find similar movies for
+ * @param {Object} res - Express response object
+ * @returns {Object} Similar movies
+ */
+exports.getSimilarTitles = async (req, res) => {
   try {
     const { movieId } = req.params;
     const movie = await Movie.findById(movieId);
 
+    // Find movies with similar genres or the same director
     const similarMovies = await Movie.find({
-      _id: { $ne: movieId },
       $or: [
         { genre: { $in: movie.genre } },
         { director: movie.director }
-      ]
-    })
-    .limit(5)
-    .sort('-averageRating');
+      ],
+      _id: { $ne: movieId } // Exclude the current movie
+    }).limit(5);
 
-    res.status(200).json({
-      status: 'success',
-      data: { similarMovies }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    res.json(similarMovies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
+/**
+ * Get trending movies based on recent ratings or activity
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} Trending movies
+ */
 exports.getTrendingMovies = async (req, res) => {
   try {
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    // Find movies sorted by recent ratings or activity, could be based on a "views" or "ratings" field
+    const trendingMovies = await Movie.find().sort({ views: -1, rating: -1 }).limit(10);
+    res.json(trendingMovies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    const trendingMovies = await Review.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: lastMonth }
-        }
-      },
-      {
-        $group: {
-          _id: '$movie',
-          totalReviews: { $sum: 1 },
-          averageRating: { $avg: '$rating' }
-        }
-      },
-      {
-        $sort: { totalReviews: -1, averageRating: -1 }
-      },
-      {
-        $limit: 10
-      }
-    ]);
-
-    const movieIds = trendingMovies.map(item => item._id);
-    const movies = await Movie.find({ _id: { $in: movieIds } });
-
-    res.status(200).json({
-      status: 'success',
-      data: { trendingMovies: movies }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+/**
+ * Get top rated movies across all genres
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} Top rated movies
+ */
+exports.getTopRatedMovies = async (req, res) => {
+  try {
+    // Find the highest-rated movies across all genres
+    const topRatedMovies = await Movie.find().sort({ rating: -1 }).limit(10);
+    res.json(topRatedMovies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
